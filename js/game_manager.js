@@ -180,14 +180,22 @@ GameManager.prototype.move = function (direction) {
   });
 
   if (moved) {
-    this.addRandomTile();
+     this.addRandomTile();
 
-    if (!this.movesAvailable()) {
-      this.over = true; // Game over!
-    }
+     if (!this.movesAvailable()) {
+       this.over = true; // Game over!
+       
+       // Show leaderboard modal when game is over
+       var self = this;
+       setTimeout(function() {
+         if (window.gameLeaderboard) {
+           window.gameLeaderboard.showLeaderboardModal(self.score);
+         }
+       }, 500); // Small delay so user can see final move
+     }
 
-    this.actuate();
-  }
+     this.actuate();
+   }
 };
 
 // Get the vector representing the chosen direction

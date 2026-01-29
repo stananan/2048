@@ -44,6 +44,10 @@ HTMLActuator.prototype.clearContainer = function (container) {
   while (container.firstChild) {
     container.removeChild(container.firstChild);
   }
+  var modal = document.querySelector('.leaderboard-overlay');
+  if (modal) {
+    modal.parentElement.remove();
+  }
 };
 
 HTMLActuator.prototype.addTile = function (tile) {
