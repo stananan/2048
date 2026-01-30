@@ -5,7 +5,6 @@ function LeaderboardManager(scriptUrl) {
 // Submit a score to the leaderboard
 LeaderboardManager.prototype.submitScore = function (name, score, callback) {
   var self = this;
-
   fetch(this.scriptUrl, {
     method: 'POST',
     mode: 'no-cors', // Important for Google Apps Script
@@ -19,9 +18,17 @@ LeaderboardManager.prototype.submitScore = function (name, score, callback) {
   })
     .then(function () {
       // no-cors means we can't read the response, but if it doesn't error, it worked
+      //console.log(s);
       if (callback) callback(null, { status: 'success' });
     })
+    // .then(res => res.json()) // parse the JSON response
+    // .then(data => {
+    //   // data now contains { status, message }
+    //   console.log(data.message); // <-- you can access your Google Script message here
+    //   if (callback) callback(null, { status: 'success' });
+    // })
     .catch(function (error) {
+      //console.log(s);
       if (callback) callback(error, null);
     });
 };
@@ -120,8 +127,8 @@ LeaderboardManager.prototype.showLeaderboardModal = function (currentScore) {
 
     self.submitScore(name, currentScore, function (error, result) {
       if (error) {
-        messageEl.textContent = 'Score submitted successfully!';
-        messageEl.style.color = '#a0d468';
+        messageEl.textContent = 'Score submitted no!' + error;
+        messageEl.style.color = '#ff0000';
       } else {
         messageEl.textContent = 'Score submitted successfully!';
         messageEl.style.color = '#a0d468';
