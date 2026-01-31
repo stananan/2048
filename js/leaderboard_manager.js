@@ -12,70 +12,70 @@ LeaderboardManager.prototype.validateSubmission = function (name, score, turns) 
   if (name.length > 20) {
     return { valid: false, message: 'Name too long (max 20 characters)' };
   }
-  
+
   // Validate score
   if (score <= 0 || !Number.isInteger(score)) {
     return { valid: false, message: 'Invalid score' };
   }
-  
+
   if (score % 4 !== 0) {
     return { valid: false, message: 'Invalid score (not a valid 2048 score)' };
   }
-  
+
   if (score > 4000000) {
     return { valid: false, message: 'Score too high - this seems impossible!' };
   }
-  
+
   var minimumTurns = Math.floor(score / 100); // Very lenient: 100 points per turn
   var maximumTurns = score * 3; // Nobody should take 3x as many turns as their score
-  
+
   if (turns < minimumTurns) {
     return { valid: false, message: 'Too few turns for this score - impossible!' };
   }
-  
+
   if (turns > maximumTurns) {
     return { valid: false, message: 'Too many turns - something went wrong!' };
   }
-  
+
   // Check rate limiting (3 submissions per 5 minutes)
   var now = Date.now();
   var fiveMinutesAgo = now - (5 * 60 * 1000);
-  
+
   if (!this.recentSubmissions[name]) {
     this.recentSubmissions[name] = [];
   }
-  
+
   // Clean old submissions
-  this.recentSubmissions[name] = this.recentSubmissions[name].filter(function(timestamp) {
+  this.recentSubmissions[name] = this.recentSubmissions[name].filter(function (timestamp) {
     return timestamp > fiveMinutesAgo;
   });
-  
+
   if (this.recentSubmissions[name].length >= 3) {
     return { valid: false, message: 'Too many submissions. Please wait a few minutes.' };
   }
-  
+
   return { valid: true };
 };
 
 // Submit a score to the leaderboard
 LeaderboardManager.prototype.submitScore = function (name, score, turns, callback) {
   var self = this;
-  
+
   // Validate before submitting
   var validation = this.validateSubmission(name, score, turns);
   if (!validation.valid) {
-    setTimeout(function() {
+    setTimeout(function () {
       if (callback) callback(new Error(validation.message), null);
     }, 0);
     return;
   }
-  
+
   // Track this submission
   if (!this.recentSubmissions[name]) {
     this.recentSubmissions[name] = [];
   }
   this.recentSubmissions[name].push(Date.now());
-  
+
   fetch(this.scriptUrl, {
     method: 'POST',
     mode: 'no-cors', // Required for Google Apps Script
@@ -198,7 +198,7 @@ LeaderboardManager.prototype.showLeaderboardModal = function (currentScore, turn
       } else {
         messageEl.textContent = 'Score submitted successfully!';
         messageEl.style.color = '#a0d468';
-        
+
         // Reload permanent leaderboard
         setTimeout(function () {
           self.updatePermanentLeaderboard();
