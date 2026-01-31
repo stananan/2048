@@ -1,4 +1,4 @@
-# GetMo
+# [GetMo](marincatholiccs.github.io/getmo/)
 forked 2048 source code with mo
 
 ## License
